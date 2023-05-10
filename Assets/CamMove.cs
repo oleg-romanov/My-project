@@ -9,20 +9,34 @@ public class CamMove : MonoBehaviour
     float shiftAdd = 250.0f; //multiplied by how long shift is held.  Basically running
     float maxShift = 1000.0f; //Maximum speed when holdin gshift
     float camSens = 0.05f; //How sensitive it with mouse
-    private Vector3 lastMouse = new Vector3(255, 255, 255); //kind of in the middle of the screen, rather than at the top (play)
+    Vector3 startPos;
+
+    //public Canvas canvas;
+
+    private Vector3 lastMouse = new Vector3(0, 0, 0); //kind of in the middle of the screen, rather than at the top (play)
+
+    //private Vector3 lastMouse;
+
     private float totalRun= 1.0f;
-     
+
+    void Start()
+    {
+        transform.rotation = Quaternion.Euler(0, 0, 0);
+        startPos = Input.mousePosition;
+        //Input.mousePosition = Vector3.zero;
+    }
+
     void Update () 
     {
-        lastMouse = Input.mousePosition - lastMouse ;
-        lastMouse = new Vector3(-lastMouse.y * camSens, lastMouse.x * camSens, 0 );
-        lastMouse = new Vector3(transform.eulerAngles.x + lastMouse.x , transform.eulerAngles.y + lastMouse.y, 0);
+        lastMouse = Input.mousePosition - lastMouse;
+        lastMouse = new Vector3(-lastMouse.y * camSens, lastMouse.x * camSens, 0);
+        lastMouse = new Vector3(transform.eulerAngles.x + lastMouse.x, transform.eulerAngles.y + lastMouse.y, 0);
         transform.eulerAngles = lastMouse;
-        lastMouse =  Input.mousePosition;
+        //lastMouse =  Input.mousePosition;
         //Mouse  camera angle done.  
-       
+
         //Keyboard commands
-        // float f = 0.0f;ß
+        //float f = 0.0f; ß
         Vector3 p = GetBaseInput();
         if (Input.GetKey (KeyCode.LeftShift)){
             totalRun += Time.deltaTime;
