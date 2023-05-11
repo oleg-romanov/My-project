@@ -1,14 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainHexagonScript : MonoBehaviour
 {
+    private static string pathToFoodPictures = "Assets/Images/";
+    [SerializeField] public static string imageContainerName = "ImageHolder";
+
     public static bool correctFoodPictureIsSelected = false;
 
     public static string currentMainPictureName;
     public static GameObject hexagonWithCorrectPicture;
     public static CheckMouseScript hexagonScriptWithCorrectPicture;
+    private Image imageComponent;
+
+    private Transform imageContainerTransform;
 
     private string[] foodPictures = new string[9] {
         "Капуста",
@@ -23,7 +30,6 @@ public class MainHexagonScript : MonoBehaviour
     };
 
     private string[] shuffledPicturesNameArray;
-    //private HashSet<string> shuffledPicturesNameSet = new HashSet<string>();
 
     [SerializeField] public static string hexagonsParentGameObjectName = "HexagonsParent";
     [SerializeField] private bool isDebug = false;
@@ -35,10 +41,14 @@ public class MainHexagonScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        imageContainerTransform = transform.Find(imageContainerName);
+        imageComponent = imageContainerTransform.GetComponent<Image>();
+
         shuffledPicturesNameArray = (string[])foodPictures.Clone();
         shufflePicturesName();
 
-        currentMainPictureName = shuffledPicturesNameArray[0];
+        setCurrentFoodImageMainHexagon(shuffledPicturesNameArray[0]);
+
         if (isDebug)
         {
             Debug.Log("Нужно найти картинку: " + currentMainPictureName);
@@ -50,6 +60,11 @@ public class MainHexagonScript : MonoBehaviour
         // Получаем количество дочерних элементов у HexagonsParent (родительского объекта)
         int hexagonsChildrenCount = hexagonsParentTransform.childCount;
 
+        if (isDebug)
+        {
+            Debug.Log("количество дочерних элементов у HexagonsParent: " + hexagonsChildrenCount);
+        }
+
         hexagonsChildren = new GameObject[hexagonsChildrenCount];
 
         // Проходим по всем дочерним объектам и получаем ссылки на них
@@ -60,6 +75,11 @@ public class MainHexagonScript : MonoBehaviour
 
             // Получаем ссылку на GameObject i-го дочернего объекта
             GameObject hexagonObject = hexagonTransform.gameObject;
+
+            if (isDebug)
+            {
+                Debug.Log("Имя шестиугольника: " + hexagonObject.name);
+            }
 
             setCurrentPictureForChildHexagon(hexagonObject, shuffledPicturesNameArray[i]);
 
@@ -80,7 +100,8 @@ public class MainHexagonScript : MonoBehaviour
 
             int index = random.Next(0, hexagonsChildren.Length);
             shufflePicturesName();
-            currentMainPictureName = shuffledPicturesNameArray[index];
+            setCurrentFoodImageMainHexagon(shuffledPicturesNameArray[index]);
+           
             for (int i = 0; i < hexagonsChildren.Length; i++)
             {
                 setCurrentPictureForChildHexagon(hexagonsChildren[i], shuffledPicturesNameArray[i]);
@@ -105,10 +126,29 @@ public class MainHexagonScript : MonoBehaviour
         }
     }
 
-    void setCurrentPictureForChildHexagon(GameObject childHexagon, string pictureName)
+    private void setCurrentFoodImageMainHexagon(string foodPictureName)
+    {
+        if (imageComponent != null)
+        {
+            if (isDebug)
+            {
+                Debug.Log(pathToFoodPictures + foodPictureName + ".png");
+            }
+            Sprite foodPictureSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(pathToFoodPictures + foodPictureName + ".png");
+            if (foodPictureSprite != null)
+            {
+                imageComponent.sprite = foodPictureSprite;
+                currentMainPictureName = foodPictureName;
+            }
+        }
+    }
+
+    private void setCurrentPictureForChildHexagon(GameObject childHexagon, string pictureName)
     {
         CheckMouseScript checkMouseScript = childHexagon.GetComponent<CheckMouseScript>();
-        checkMouseScript.currentFoodPictureName = pictureName;
+        checkMouseScript.setCurrentFoodImage(pictureName);
+
+        //checkMouseScript.currentFoodPictureName = pictureName;
         if (isDebug)
         {
             Debug.Log(childHexagon.name + ": " + pictureName);
