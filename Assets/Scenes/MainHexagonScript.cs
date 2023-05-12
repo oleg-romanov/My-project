@@ -134,7 +134,7 @@ public class MainHexagonScript : MonoBehaviour
             {
                 Debug.Log(pathToFoodPictures + foodPictureName + ".png");
             }
-            Sprite foodPictureSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(pathToFoodPictures + foodPictureName + ".png");
+            Sprite foodPictureSprite = Resources.Load<Sprite>(foodPictureName);
             if (foodPictureSprite != null)
             {
                 imageComponent.sprite = foodPictureSprite;
@@ -148,7 +148,6 @@ public class MainHexagonScript : MonoBehaviour
         CheckMouseScript checkMouseScript = childHexagon.GetComponent<CheckMouseScript>();
         checkMouseScript.setCurrentFoodImage(pictureName);
 
-        //checkMouseScript.currentFoodPictureName = pictureName;
         if (isDebug)
         {
             Debug.Log(childHexagon.name + ": " + pictureName);
