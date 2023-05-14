@@ -9,18 +9,22 @@ public class MoveMove : MonoBehaviour
         MouseX = 1,
         MouseY = 2
     }
+
+    [SerializeField] public bool eyeControl = false;
     public RotationAxes axes = RotationAxes.MouseXAndY;
     public float sensitivityHor = 9.0f;
     public float sensitivityVert = 9.0f;
     public float minimumVert = -45.0f;
     public float maximumVert = 45.0f;
     private float _rotationX = 0;
+
     void Start()
     {
         Rigidbody body = GetComponent<Rigidbody>();
         if (body != null)
             body.freezeRotation = true;
     }
+
     void Update()
     {
         if (axes == RotationAxes.MouseX)

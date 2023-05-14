@@ -5,7 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/FlowerGame.unity
     guid: d8bb84b057b634524a23b9db2e322dd1
+  - enabled: 1
+    path: Assets/Scenes/CrossesGame.unity
+    guid: ac6bb86f35d254343b857669e76895a7
   m_configObjects: {}
