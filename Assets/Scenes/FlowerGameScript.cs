@@ -55,10 +55,5 @@ public class FlowerGameScript : MonoBehaviour
         //{
         //    //Debug.Log("hitCollider is null");
         //}
-        if (!EventSystem.current.IsPointerOverGameObject())
-        {
-            Debug.Log("hit object");
-        }
-
     }
 }

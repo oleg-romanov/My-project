@@ -9,7 +9,9 @@ public class MouseFollow : MonoBehaviour
 
     private TcpClient client;
     private NetworkStream stream;
-    private byte[] buffer = new byte[1024];
+    //private byte[] buffer = new byte[1024];
+    private const int bufferSize = 9;
+    private byte[] buffer;
 
     public Vector2 targetPosition; // Заданные координаты (x,y)
 
@@ -26,51 +28,58 @@ public class MouseFollow : MonoBehaviour
     {
         // Подключение к серверу
         client = new TcpClient();
+  
         client.Connect("localhost", 9097);
+
+        buffer = new byte[bufferSize];
+
+        stream = client.GetStream();
     }
 
     // Update is called once per frame
     void Update()
     {
         // Получение координат
-        stream = client.GetStream();
-        int bytes = stream.Read(buffer, 0, buffer.Length);
-        string data = Encoding.ASCII.GetString(buffer, 0, bytes);
+        //stream = client.GetStream();
+        //int bytes = stream.Read(buffer, 0, buffer.Length);
 
-        // Разбор координат
-        string[] coordinates = data.Split(',');
-        float x = float.Parse(coordinates[0]);
-        float y = float.Parse(coordinates[1]);
+        //string data = Encoding.ASCII.GetString(buffer, 0, bytes);
 
-        Debug.Log($"Coordinates: ({x}, {y})");
+        //// Разбор координат
+        //string[] coordinates = data.Split(',');
+        //float x = float.Parse(coordinates[0]);
+        //float y = float.Parse(coordinates[1]);
+        if (stream != null && stream.DataAvailable)
+        {
+            Debug.Log("Стрим есть и данные тоже");
+            int bytesRead = stream.Read(buffer, 0, bufferSize);
 
-        //targetPosition = new Vector2(x, y);
+            if (bytesRead > 0)
+            {
+                byte infoByte = buffer[0];
+                float x = System.BitConverter.ToSingle(buffer, 1);
+                float y = System.BitConverter.ToSingle(buffer, 5);
 
-        //Vector3 targetPos = new Vector3(targetPosition.x, targetPosition.y, 0);
-        //Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //Vector3 direction = targetPos - mousePos;
-        //float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        //transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-        //lastMouse = Input.mousePosition - lastMouse;
+                Debug.Log($"x: {x}, y: {y})");
 
-        lastMouse = new Vector3(x: x, y: y, 0) - lastMouse;
-        //lastMouse = new Vector3(lastMouse.x, lastMouse.y - y, lastMouse.z);
+                lastMouse = new Vector3(x: x, y: y, 0) - lastMouse;
+                lastMouse = new Vector3(-lastMouse.y * camSens, lastMouse.x * camSens, 0);
+                lastMouse = new Vector3(transform.eulerAngles.x + lastMouse.x, transform.eulerAngles.y + lastMouse.y, 0);
+                transform.eulerAngles = lastMouse;
+                lastMouse = new Vector3(x: x, y: y, 0);
+                
+            }
+        }
 
-        //lastMouse = lastMouse - new Vector3(x: x, y: y, 0);
+        //Debug.Log($"Coordinates: ({x}, {y})");
 
-        lastMouse = new Vector3(-lastMouse.y * camSens, lastMouse.x * camSens, 0);
-        lastMouse = new Vector3(transform.eulerAngles.x + lastMouse.x, transform.eulerAngles.y + lastMouse.y, 0);
-        transform.eulerAngles = lastMouse;
-        //transform.rotation = Quaternion.Euler(Mathf.Clamp(lastMouse.y, -90f, 90f), lastMouse.x, 0f);
-        //lastMouse = Input.mousePosition;
-        lastMouse = new Vector3(x: x, y: y, 0);
-        //Mouse  camera angle done.  
-
-        //Keyboard commands
-        // float f = 0.0f;ß
+        //lastMouse = new Vector3(x: x, y: y, 0) - lastMouse;
+        //lastMouse = new Vector3(-lastMouse.y * camSens, lastMouse.x * camSens, 0);
+        //lastMouse = new Vector3(transform.eulerAngles.x + lastMouse.x, transform.eulerAngles.y + lastMouse.y, 0);
+        //transform.eulerAngles = lastMouse;
+        //lastMouse = new Vector3(x: x, y: y, 0);
+        //Vector3 p = new Vector3(targetPosition.x, targetPosition.y, 0);
         Vector3 p = new Vector3(targetPosition.x, targetPosition.y, 0);
-
-
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
@@ -99,5 +108,17 @@ public class MouseFollow : MonoBehaviour
         {
             transform.Translate(p);
         }
+    }
+
+    //private void OnEnable()
+    //{
+    //    Debug.Log("Вызван OnEnable");
+    //    stream = client.GetStream();
+    //}
+
+    private void OnDisable()
+    {
+        stream?.Close();
+        stream = null;
     }
 }

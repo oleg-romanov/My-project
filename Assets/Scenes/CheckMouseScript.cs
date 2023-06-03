@@ -78,8 +78,6 @@ public class CheckMouseScript : MonoBehaviour
                 {
                     Debug.Log(pathToFoodPictures + foodPictureName + ".png");
                 }
-                //Sprite foodPictureSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(pathToFoodPictures + foodPictureName + ".png");
-                //Sprite foodPictureSprite = Resources.Load<Sprite>($"../Assets/Resources/{foodPictureName}.png");
                 Sprite foodPictureSprite = Resources.Load<Sprite>(foodPictureName);
                 if (foodPictureSprite != null)
                 {

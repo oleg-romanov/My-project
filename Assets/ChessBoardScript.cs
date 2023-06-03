@@ -13,7 +13,7 @@ public class ChessBoardScript : MonoBehaviour
 
     // Количество строк и столбцов
     private int rowCount = 8;
-    private int columnCount = 8;
+    private int columnCount = 12;
 
     System.Random random = new System.Random();
 
